@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "coap": "~0.21.0"
+  },
+  "dependencies": {
+    "coap": "~0.21.0"
   }
 }
