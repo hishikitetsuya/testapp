@@ -1,21 +1,35 @@
-var http = require('http');
+var express = require("express");
+var bodyParser = require('body-parser');
 
-http.createServer(function (req, res) {
-    
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('Hello, world!!!!!!!');
-    
-}).listen(process.env.PORT || 8080);
+var app = express();
 
+app.set("views", "./views");
+app.set("view engine", "ejs");
 
-var coap        = require('coap')
-  , server      = coap.createServer()
+app.use(bodyParser.json({
+  extended: true
+}));
+
+app.listen(process.env.PORT || 8080);
+app.use("/public", express.static("public"));
+
+app.get('/', function(req,res) {
+  res.render("./server.ejs");
+})
+
+app.post('/submit', function(req,res) {
+//  console.log(req);
+  console.log(req.body);
+  res.send(req.body);
+});
+
+var coap = require('coap'),
+  server = coap.createServer()
 
 server.on('request', function(req, res) {
   res.end('Hello ' + req.url.split('/')[1] + '\n')
-})
+});
 
 server.listen(function() {
   console.log('server started')
-})
-
+});

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>追跡ログ ビューワー</title>
+  <style>
+    .alert {
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>追跡ログ ビューワー</h1>
+  <script type="text/javascript" src="/public/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script>
+    google.charts.load('current', {
+      'packages': ['timeline']
+    });
+//    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+      var container = document.getElementById('result');
+      var chart = new google.visualization.Timeline(container);
+      var dataTable = new google.visualization.DataTable();
+
+      dataTable.addColumn({
+        type: 'string',
+        id: 'President'
+      });
+      dataTable.addColumn({
+        type: 'date',
+        id: 'Start'
+      });
+      dataTable.addColumn({
+        type: 'date',
+        id: 'End'
+      });
+      dataTable.addRows([
+        ['Washington', new Date(1789, 3, 30), new Date(1797, 2, 4)],
+        ['Adams', new Date(1797, 2, 4), new Date(1801, 2, 4)],
+        ['Jefferson', new Date(1801, 2, 4), new Date(1809, 2, 4)]
+      ]);
+
+      chart.draw(dataTable);
+    }
+
+    function postxhr() {
+      var xhr = new XMLHttpRequest();
+
+      xhr.open("POST", "/submit");
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          $("#result").append("<p>" + xhr.responseText + "</p>");
+        }
+      }
+      xhr.send(document.getElementById("name").value);
+    }
+  </script>
+  <% if (locals.errors) { %>
+    <ul class="alert">
+      <%   for (var i = 0; i < errors.length; i++) { %>
+        <li>
+          <%= errors[i]%>
+        </li>
+        <%   } %>
+    </ul>
+    <% } %>
+      <div class="ui-widget-header ui-corner-all" style="padding: 10px;">
+        <label for="name">ログをここにコピー：</label></BR>
+        <textarea cols="100" rows="10" id="name" name="name" value="<%= locals.name ? name : " "%>"></textarea>
+      </div>
+      <div class="ui-widget-header ui-corner-all" style="padding: 10px;">
+        <input type="submit" value="パース" onclick="postxhr()" />
+      </div>
+      <div id="result">
+      </div>
+</body>
+
+</html>
